@@ -1,4 +1,4 @@
-package ru.academits.ikonnikov.vector.classes;
+package ru.academits.ikonnikov.matrix.mainMatrix;
 
 import java.lang.IllegalArgumentException;
 import java.lang.IndexOutOfBoundsException;
@@ -163,5 +163,4 @@ public class Vector {
         return Arrays.hashCode(this.components);
     }
 }
-
 
