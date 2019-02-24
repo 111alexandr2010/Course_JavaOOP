@@ -138,6 +138,18 @@ public class Matrix {
         return this;
     }
 
+    public Matrix transpose1() {
+        int columnsNumber = this.getColumnsNumber();
+        Matrix resultMatrix = new Matrix(columnsNumber, this.rows.length);
+
+        for (int i = 0; i < columnsNumber; i++) {
+            resultMatrix.rows[i] = this.getColumn(i);
+        }
+
+        this.rows = Arrays.copyOf(resultMatrix.rows, columnsNumber);
+        return this;
+    }
+
     public Matrix transpose() {
         int columnsNumber = this.getColumnsNumber();
         double[][] array = new double[columnsNumber][this.rows.length];
