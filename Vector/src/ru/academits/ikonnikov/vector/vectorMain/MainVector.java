@@ -37,7 +37,7 @@ public class MainVector {
 
         System.out.printf("The result of addition of vectors v1 and v2 by nonstatic method is: %s %n", v1.add(v2).toString());
 
-        System.out.printf("The result of addition of vectors v1 and v2 by static method is: %s %n", add(v1, v2).toString());
+        System.out.printf("The result of addition of vectors v1 and v2 by static method is: %s %n", Vector.add(v1, v2).toString());
 
         System.out.printf("The result of subtraction of vector v2 from v1 by nonstatic method is: %s %n", v1.subtract(v2).toString());
 

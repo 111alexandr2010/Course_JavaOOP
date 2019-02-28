@@ -35,10 +35,6 @@ public class Vector {
         this.components = Arrays.copyOf(array, vectorSize);
     }
 
-    public double[] getComponent() {
-        return this.components;
-    }
-
     public int getSize() {
         return this.components.length;
     }
@@ -128,7 +124,7 @@ public class Vector {
 
         for (int i = 0; i < (arrayLength - 1); i++) {
             String str = String.format(" %.2f ,", this.components[i]);
-            result = result.append(str);
+            result.append(str);
         }
         String str = String.format(" %.2f }", this.components[arrayLength - 1]);
         return result.append(str).toString();
@@ -163,5 +159,6 @@ public class Vector {
         return Arrays.hashCode(this.components);
     }
 }
+
 
 
