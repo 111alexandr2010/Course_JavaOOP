@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class ArrayListHome {
     public static void main(String[] args) {
         try {
-            Scanner scanner = new Scanner(new FileInputStream("./res/input2.txt"));
+            Scanner scanner = new Scanner(new FileInputStream("./res/input.txt"));
             ArrayList<String> list = new ArrayList<>();
 
             while (scanner.hasNext()) {
