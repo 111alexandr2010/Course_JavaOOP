@@ -1,21 +1,23 @@
 package ru.academits.ikonnikov.list.main;
 
 import ru.academits.ikonnikov.list.classes.List;
-import ru.academits.ikonnikov.list.classes.ListNode;
+import ru.academits.ikonnikov.list.node.ListNode;
 
 public class ListMain {
     public static void main(String[] args) {
         ListNode<String> head = new ListNode<>("Yes");
 
-        List<String> list = new List<>(head, 5);
+        List<String> list = new List<>(head, 1);
 
         list.insertInHead("Good buy");
-        list.insertByIndex(2, "Hello");
-        list.insertByIndex(3, "Thank you");
-        list.insertByIndex(4, "Please");
+        list.insertByIndex(1, "Hello");
+        list.insertByIndex(2, "Thank you");
+        list.insertByIndex(2, "Please");
         System.out.println("The list is:" + list.toString());
 
         System.out.println("The size of this list is: " + list.getLength());
+
+        System.out.println("The head of list is: " + list.getHead().toString());
 
         System.out.println("The data of head is: " + list.getHeadData());
 

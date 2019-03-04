@@ -1,4 +1,4 @@
-package ru.academits.ikonnikov.list.classes;
+package ru.academits.ikonnikov.list.node;
 
 public class ListNode<T> {
     private T data;
@@ -8,24 +8,24 @@ public class ListNode<T> {
         this.data = data;
     }
 
-    ListNode(T data, ListNode<T> next) {
+    public ListNode(T data, ListNode<T> next) {
         this.data = data;
         this.next = next;
     }
 
-    ListNode<T> getNext() {
+    public ListNode<T> getNext() {
         return next;
     }
 
-    void setNext(ListNode<T> next) {
+    public void setNext(ListNode<T> next) {
         this.next = next;
     }
 
-    T getData() {
+    public T getData() {
         return data;
     }
 
-    void setData(T data) {
+    public void setData(T data) {
         this.data = data;
     }
 
@@ -38,3 +38,5 @@ public class ListNode<T> {
         return "Node :[DATA: " + data + ", NEXT: " + next.getData() + "]";
     }
 }
+
+
