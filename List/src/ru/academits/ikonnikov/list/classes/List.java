@@ -2,21 +2,20 @@ package ru.academits.ikonnikov.list.classes;
 
 import ru.academits.ikonnikov.list.node.ListNode;
 
+import java.util.Objects;
+
 public class List<T> {
     private ListNode<T> head;
     private int size;
 
-    public List(ListNode<T> head, int size) {
-        this.head = head;
-        this.size = size;
+    public List(T head) {
+        size = 1;
+        this.head = new ListNode<>(head);
     }
 
-    public ListNode<T> getHead() {
-        return head;
-    }
-
-    public void setHead(ListNode<T> head) {
-        this.head = head;
+    public List() {
+        head = null;
+        size = 0;
     }
 
     public int getLength() {
@@ -24,76 +23,65 @@ public class List<T> {
     }
 
     public T getHeadData() {
+        if (head == null) {
+            throw new NullPointerException("The list is empty!");
+        }
         return head.getData();
     }
 
-    public T getData(int index) {
+    private ListNode<T> findByIndex(int index) {
         if (index < 0 || index >= size) {
-            throw new RuntimeException("The getting of data is impossible, because the value of index is not correct!");
+            throw new IndexOutOfBoundsException("The finding of node is impossible, because the value of index is not correct!");
         }
-
         int i = 0;
-        T result = null;
+        ListNode<T> t = null;
 
         for (ListNode<T> p = head; p != null; p = p.getNext()) {
             if (i == index) {
-                result = p.getData();
+                t = p;
                 break;
-            } else {
-                i++;
             }
+            i++;
         }
-        return result;
+        return t;
+    }
+
+    public T getData(int index) {
+        ListNode<T> currentNode = findByIndex(index);
+
+        return currentNode.getData();
     }
 
     public T setData(int index, T data) {
-        if (index < 0 || index >= size) {
-            throw new RuntimeException("The setting of data is impossible, because the value of index is not correct!");
-        }
+        ListNode<T> currentNode = findByIndex(index);
+        T dataPast = currentNode.getData();
+        currentNode.setData(data);
 
-        int i = 0;
-        T dataPast = null;
-
-        for (ListNode<T> p = head; p != null; p = p.getNext()) {
-            if (i == index) {
-                dataPast = p.getData();
-                p.setData(data);
-                break;
-            } else {
-                i++;
-            }
-        }
         return dataPast;
     }
 
     public T removeNode(int index) {
-        if (index < 0 || index > size) {
-            throw new RuntimeException("The removing is impossible, because the value of index is not correct!");
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("The removing of node is impossible, because the value of index is not correct!");
         }
-
-        T removedData = null;
-        int i = 0;
-
-        for (ListNode<T> p = head, prev = null; p != null; prev = p, p = p.getNext()) {
-            if (i == index) {
-                if (prev == null) {
-                    removeHead();
-                } else {
-                    removedData = p.getData();
-                    prev.setNext(p.getNext());
-                    p.setData(null);
-                    p.setNext(null);
-                    size--;
-                    break;
-                }
-            } else {
-                i++;
-            }
+        if (index == 0) {
+            return removeHead();
         }
+        ListNode<T> previousNode = findByIndex(index - 1);
+        ListNode<T> currentNode = previousNode.getNext();
+
+        T removedData = currentNode.getData();
+        previousNode.setNext(currentNode.getNext());
+        currentNode.setNext(null);
+        size--;
+
         return removedData;
     }
 
     public T removeHead() {
+        if (head == null) {
+            throw new NullPointerException("The list is empty!");
+        }
         T removedData = head.getData();
         head.setData(null);
         head = head.getNext();
@@ -102,19 +90,23 @@ public class List<T> {
     }
 
     public boolean removeNodeByValue(T data) {
-        boolean wasDelete = false;
-        int i = 0;
+        if (size == 0) {
+            return false;
+        }
+        if (Objects.equals(head.getData(), data)) {
+            removeHead();
+            return true;
+        }
 
-        for (ListNode<T> p = head; p != null; p = p.getNext()) {
-            if (p.getData().equals(data)) {
-                wasDelete = true;
-                removeNode(i);
-                break;
-            } else {
-                i++;
+        for (ListNode<T> p = head.getNext(), prev = head; p != null; prev = p, p = p.getNext()) {
+            if (Objects.equals(p.getData(), data)) {
+                prev.setNext(p.getNext());
+                p.setNext(null);
+                size--;
+                return true;
             }
         }
-        return wasDelete;
+        return false;
     }
 
     public void insertInHead(T data) {
@@ -123,72 +115,78 @@ public class List<T> {
     }
 
     public void insertByIndex(int index, T data) {
-        if (index < 0 || index >= size) {
-            throw new RuntimeException("The value of index is not correct!");
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("The inserting is impossible, because the value of index is not correct!");
         }
 
         if (index == 0) {
             insertInHead(data);
             return;
         }
-
-        int i = 1;
-
-        for (ListNode<T> p = head.getNext(), prev = head; i < size; prev = p, p = p.getNext()) {
-            if (i == index) {
-                ListNode<T> t = new ListNode<>(data);
-                if (p == null) {
-                    t.setNext(null);
-                } else {
-                    t.setNext(p);
-                }
-                prev.setNext(t);
-                size++;
-                break;
-            } else {
-                i++;
-            }
-        }
+        size++;
+        ListNode<T> previousNode = findByIndex(index - 1);
+        ListNode<T> t = new ListNode<>(data);
+        t.setNext(previousNode.getNext());
+        previousNode.setNext(t);
     }
 
-    public List turn() {
+    public void turn() {
         if (size < 2) {
-            return this;
+            return;
         }
-        ListNode<T> copyHead = new ListNode<>(head.getData());
-        List<T> copy = new List<>(copyHead, size);
+        ListNode<T> prevNode = head;
+        ListNode<T> currentNode = head.getNext();
+        ListNode<T> nextNode = currentNode.getNext();
 
-        for (ListNode<T> p = head.getNext(); p != null; p = p.getNext()) {
-            copy.insertInHead(p.getData());
+        for (int i = 1; i < size; i++) {
+            prevNode.setNext(nextNode);
+            currentNode.setNext(head);
+            head = currentNode;
+            currentNode = nextNode;
+
+            if (i == size - 1) {
+                break;
+            }
+            nextNode = currentNode.getNext();
         }
-
-        this.head = copy.getHead();
-        return this;
     }
 
-    public List copy() {
-        ListNode<T> copyHead = new ListNode<>(head.getData());
-        List<T> copy = new List<>(copyHead, size);
+    public List<T> copy() {
+        if (size == 0) {
+            return new List<>();
+        }
+        List<T> copy = new List<>(head.getData());
 
-        int i = 1;
+        if (size == 1) {
+            return copy;
+        }
+        ListNode<T> copyPreviousNode = copy.head;
+        ListNode<T> nextNode = head.getNext();
+        copy.size = this.size;
 
-        for (ListNode<T> p = head.getNext(); p != null; p = p.getNext()) {
-            copy.insertByIndex(i, p.getData());
-            i++;
+        for (int i = 1; i < this.size; i++) {
+            ListNode<T> copyCurrentNode = new ListNode<>(nextNode.getData());
+            copyPreviousNode.setNext(copyCurrentNode);
+            nextNode = nextNode.getNext();
+            copyPreviousNode = copyCurrentNode;
         }
         return copy;
     }
 
     @Override
     public String toString() {
-        int size = this.size;
+        if (size == 0) {
+            return "[ ]";
+        }
         StringBuilder result = new StringBuilder("[");
+        ListNode<T> currentNode = head;
 
         for (int i = 0; i < (size - 1); i++) {
-            String str = String.format(" %s ,", this.getData(i));
+            String str = String.format(" %s ,", currentNode.getData());
+            currentNode = currentNode.getNext();
             result.append(str);
         }
-        String str = String.format(" %s ]", this.getData(size - 1));
+        String str = String.format(" %s ]", currentNode.getData());
         return result.append(str).toString();
     }
 }

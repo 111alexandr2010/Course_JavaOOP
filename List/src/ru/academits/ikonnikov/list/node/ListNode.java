@@ -1,5 +1,7 @@
 package ru.academits.ikonnikov.list.node;
 
+import java.util.Objects;
+
 public class ListNode<T> {
     private T data;
     private ListNode<T> next;
@@ -31,10 +33,9 @@ public class ListNode<T> {
 
     @Override
     public String toString() {
-        if (this.getData() == null) {
-            return "Node is null!";
+        if (next == null) {
+            return "Node :[DATA: " + data + ", NEXT: NULL" + "]";
         }
-
         return "Node :[DATA: " + data + ", NEXT: " + next.getData() + "]";
     }
 }
