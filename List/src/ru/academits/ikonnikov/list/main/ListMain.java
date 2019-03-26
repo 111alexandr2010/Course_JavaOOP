@@ -1,17 +1,17 @@
 package ru.academits.ikonnikov.list.main;
 
-import ru.academits.ikonnikov.list.classes.List;
+import ru.academits.ikonnikov.myArrayList.classes.MyList;
 
 public class ListMain {
     public static void main(String[] args) {
-        List<String> listEmpty = new List<>();
+        MyList<String> listEmpty = new MyList<>();
         System.out.println("The listEmpty is: " + listEmpty.toString());
         listEmpty.turn();
         System.out.println("The listEmpty after turning is: " + listEmpty.toString());
         System.out.println("The copy of listEmpty is: " + listEmpty.copy().toString());
         System.out.println("" + listEmpty.removeNodeByValue("d"));
 
-        List<String> list = new List<>("Not");
+        MyList<String> list = new MyList<>("Not");
         list.insertInHead("Good buy");
         list.insertByIndex(1, "Hello");
         list.insertByIndex(2, "null");
@@ -26,7 +26,7 @@ public class ListMain {
         System.out.println("The data by index '3' before setting data 'Yes' is : " + list.setData(3, "Yes"));
         System.out.println("The list after setting data 'Yes' by index '3' is : " + list.toString());
 
-        List<String> list1 = list.copy();
+        MyList<String> list1 = list.copy();
         System.out.println("The copy of list is: " + list1.toString());
 
         list.turn();
