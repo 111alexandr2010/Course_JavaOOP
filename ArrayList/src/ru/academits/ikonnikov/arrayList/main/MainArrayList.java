@@ -1,6 +1,6 @@
-package ru.academits.ikonnikov.myArrayList.main;
+package ru.academits.ikonnikov.arrayList.main;
 
-import ru.academits.ikonnikov.myArrayList.classes.MyArrayList;
+import ru.academits.ikonnikov.arrayList.classes.MyArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;

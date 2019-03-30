@@ -1,4 +1,4 @@
-package ru.academits.ikonnikov.myArrayList.classes;
+package ru.academits.ikonnikov.arrayList.classes;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -67,6 +67,7 @@ public class MyArrayList<T> implements List<T> {
         private int currentIndex = -1;
         private int modCountCurrent = modCount;
 
+        @Override
         public boolean hasNext() {
             return currentIndex + 1 < size;
         }
