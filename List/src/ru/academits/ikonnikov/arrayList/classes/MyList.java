@@ -1,4 +1,4 @@
-package ru.academits.ikonnikov.myArrayList.classes;
+package ru.academits.ikonnikov.arrayList.classes;
 
 import ru.academits.ikonnikov.list.node.ListNode;
 
