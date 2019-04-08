@@ -1,7 +1,5 @@
 package ru.academits.ikonnikov.list.node;
 
-import java.util.Objects;
-
 public class ListNode<T> {
     private T data;
     private ListNode<T> next;
