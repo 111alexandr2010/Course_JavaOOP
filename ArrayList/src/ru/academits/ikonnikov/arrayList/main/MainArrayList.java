@@ -1,6 +1,6 @@
 package ru.academits.ikonnikov.arrayList.main;
 
-import ru.academits.ikonnikov.list.classes.MyArrayList;
+import ru.academits.ikonnikov.arrayList.classes.MyArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +81,7 @@ public class MainArrayList {
 
         System.out.println("The result of removing collection {'4','8'} from myListStrings  is : " + myListStrings.removeAll(collection2));
         System.out.println("The myListStrings  after removing collection {'4','8'} is : " + myListStrings.toString());
+        System.out.println("The size of myListStrings  after removing collection {'4','8'} is : " + myListStrings.size());
 
         Object[] arrayListToArrayStr = myListStrings.toArray();
         System.out.print("The array by method 'myListStrings.toArray()' is : (");
@@ -106,6 +107,7 @@ public class MainArrayList {
         }
         System.out.println("The result of using method 'retainAll' to myListStrings by collection {'s','q','p'} is : " + myListStrings.retainAll(collection1));
         System.out.println("The myListStrings after using method 'retainAll' by collection {'s','q','p'} is : " + myListStrings.toString());
+        System.out.println("The size of myListStrings after using method 'retainAll' by collection {'s','q','p'} is : " + myListStrings.size());
         System.out.println();
 
         MyArrayList<String> myListStringsCopy = new MyArrayList<>(arrayStrings);
@@ -145,6 +147,7 @@ public class MainArrayList {
 
         if (myListShorts.retainAll(collection4)) {
             System.out.println("The myListShorts after using method 'retainAll' by collection {'11','16','20'} is : " + myListShorts.toString());
+            System.out.println("The size of myListShorts after using method 'retainAll' by collection {'11','16','20'} is : " + myListShorts.size());
         }
     }
 }

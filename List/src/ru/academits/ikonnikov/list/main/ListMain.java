@@ -1,6 +1,6 @@
 package ru.academits.ikonnikov.list.main;
 
-import ru.academits.ikonnikov.list.classes.MyList;
+import ru.academits.ikonnikov.arrayList.classes.MyList;
 
 public class ListMain {
     public static void main(String[] args) {
