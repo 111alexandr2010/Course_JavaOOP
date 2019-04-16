@@ -13,7 +13,6 @@ public class MyHashTable<T> implements Collection<T> {
         }
         //noinspection unchecked
         this.lists = new ArrayList[capacity];
-
         this.modCount = 0;
         this.size = 0;
     }
@@ -29,9 +28,6 @@ public class MyHashTable<T> implements Collection<T> {
     }
 
     private int calculateObjectIndex(Object object) {
-        if (lists.length == 0) {
-            throw new IllegalArgumentException("This hashTable is null!");
-        }
         if (object == null) {
             return 0;
         }
@@ -45,12 +41,7 @@ public class MyHashTable<T> implements Collection<T> {
         if (lists[indexObject] == null) {
             return false;
         }
-        for (T item : lists[indexObject]) {
-            if (Objects.equals(item, object)) {
-                return true;
-            }
-        }
-        return false;
+        return lists[indexObject].contains(object);
     }
 
     @Override
@@ -58,6 +49,7 @@ public class MyHashTable<T> implements Collection<T> {
         if (c == null) {
             throw new IllegalArgumentException("This collection is null!");
         }
+
         for (Object item : c) {
             if (!this.contains(item)) {
                 return false;
@@ -85,14 +77,11 @@ public class MyHashTable<T> implements Collection<T> {
         if (c == null) {
             throw new IllegalArgumentException("This collection is null!");
         }
-        boolean wasAddAll = false;
 
-        for (Object item : c) {
-                //noinspection unchecked
-                this.add((T) item);
-                wasAddAll = true;
+        for (T item : c) {
+            this.add(item);
         }
-        return wasAddAll;
+        return c.size() > 0;
     }
 
     @Override
@@ -102,17 +91,10 @@ public class MyHashTable<T> implements Collection<T> {
         if (lists[indexObject] == null) {
             return false;
         }
-        for (T item : lists[indexObject]) {
-            if (Objects.equals(item, object)) {
-                if (lists[indexObject].size() == 1) {
-                    lists[indexObject] = null;
-                } else {
-                    lists[indexObject].remove(item);
-                }
-                modCount++;
-                size--;
-                return true;
-            }
+        if (lists[indexObject].remove(object)) {
+            modCount++;
+            size--;
+            return true;
         }
         return false;
     }
@@ -126,13 +108,16 @@ public class MyHashTable<T> implements Collection<T> {
 
         for (ArrayList<T> list : lists) {
             if (list != null) {
-                for (T item : list) {
-                    if (c.contains(item)) {
-                        remove(item);
-                        wasRemovedAll = true;
-                    }
+                int listSizeBeforeRemoving = list.size();
+
+                if (list.removeAll(c)) {
+                    wasRemovedAll = true;
+                    size -= listSizeBeforeRemoving - list.size();
                 }
             }
+        }
+        if (wasRemovedAll) {
+            modCount++;
         }
         return wasRemovedAll;
     }
@@ -146,14 +131,16 @@ public class MyHashTable<T> implements Collection<T> {
 
         for (ArrayList<T> list : lists) {
             if (list != null) {
-                for (int j = 0; j < list.size(); j++) {
-                    if (!c.contains(list.get(j))) {
-                        list.remove(j);
-                        j--;
-                        wasRetainedAll = true;
-                    }
+                int listSizeBeforeRetaining = list.size();
+
+                if (list.retainAll(c)) {
+                    wasRetainedAll = true;
+                    size -= listSizeBeforeRetaining - list.size();
                 }
             }
+        }
+        if (wasRetainedAll) {
+            modCount++;
         }
         return wasRetainedAll;
     }
@@ -172,8 +159,93 @@ public class MyHashTable<T> implements Collection<T> {
     }
 
     @Override
+    public Iterator<T> iterator() {
+        return new MyTableIterator();
+    }
+
+    private class MyTableIterator implements Iterator<T> {
+        private int currentArrayIndex = getIndexNextNotNullList(0);
+        private int currentListIndex = 0;
+        private int currentCollectionIndex = -1;
+        private int modCountCurrent = modCount;
+
+        private int getIndexNextNotNullList(int start) {
+            if (start < 0 || start >= lists.length) {
+                throw new IllegalArgumentException("The value of argument isn't correct!");
+            }
+
+            for (int i = start; i < lists.length; i++) {
+                if (lists[i] != null && lists[i].size() > 0) {
+                    return i;
+                }
+            }
+            return lists.length - 1;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentCollectionIndex + 1 < size;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("The next element is absent!");
+            }
+            if (modCountCurrent != modCount) {
+                throw new ConcurrentModificationException("There was adding or removing elements!");
+            }
+            currentCollectionIndex++;
+            T item = lists[currentArrayIndex].get(currentListIndex);
+
+            if (currentListIndex + 1 == lists[currentArrayIndex].size() && currentArrayIndex + 1 < lists.length) {
+                currentListIndex = 0;
+                currentArrayIndex++;
+                currentArrayIndex = getIndexNextNotNullList(currentArrayIndex);
+            } else {
+                currentListIndex++;
+            }
+            return item;
+        }
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] arrayForLists = new Object[size];
+        int i = 0;
+
+        for (T item : this) {
+            arrayForLists[i] = item;
+            i++;
+        }
+        return arrayForLists;
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] array) {
+        if (array == null) {
+            throw new IllegalArgumentException("This array is null!");
+        }
+        if (array.length < size) {
+            //noinspection unchecked
+            array = (T1[]) Arrays.copyOf(array, size, array.getClass());
+        }
+        int i = 0;
+
+        for (T item : this) {
+            //noinspection unchecked
+            array[i] = (T1) item;
+            i++;
+        }
+        if (array.length > size) {
+            array[size] = null;
+        }
+        return array;
+    }
+
+    @Override
     public String toString() {
-        if (size == 0 || lists == null) {
+        if (lists.length == 0) {
             return "{ }";
         }
         StringBuilder result = new StringBuilder("{").append(System.lineSeparator());
@@ -181,6 +253,7 @@ public class MyHashTable<T> implements Collection<T> {
         for (ArrayList<T> list : lists) {
             if (list != null && list.size() > 0) {
                 int i = 0;
+
                 for (T item : list) {
                     int indexObject = calculateObjectIndex(item);
 
@@ -197,100 +270,5 @@ public class MyHashTable<T> implements Collection<T> {
             }
         }
         return result.append("}").toString();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new MyTableIterator();
-    }
-
-    private class MyTableIterator implements Iterator<T> {
-        private int currentIndexArray = 0;
-        private int currentIndexList = 0;
-        private int modCountCurrent = modCount;
-        private boolean needContinue = true;
-
-        @Override
-        public boolean hasNext() {
-            if (!needContinue) {
-                return false;
-            }
-            if (lists[lists.length - 1] == null) {
-                return currentIndexArray + 1 < lists.length;
-            }
-            return (currentIndexArray + 1 < lists.length || currentIndexList < lists[lists.length - 1].size());
-        }
-
-        @Override
-        public T next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("The next element is absent!");
-            }
-            if (modCountCurrent != modCount) {
-                throw new ConcurrentModificationException("There was adding or removing elements!");
-            }
-            while (currentIndexArray + 1 < lists.length && lists[currentIndexArray] == null) {
-                currentIndexArray++;
-            }
-            T item = lists[currentIndexArray].get(currentIndexList);
-
-            if (currentIndexList == lists[currentIndexArray].size() - 1) {
-                currentIndexList = 0;
-
-                if (currentIndexArray < lists.length - 1) {
-                    currentIndexArray++;
-                } else {
-                    needContinue = false;
-                }
-            } else {
-                currentIndexList++;
-            }
-            return item;
-        }
-    }
-
-    @Override
-    public Object[] toArray() {
-        Object[] arrayForLists = new Object[size];
-        int i = 0;
-
-        for (ArrayList list : this.lists) {
-            if (list != null) {
-                for (Object item : list) {
-                    arrayForLists[i] = item;
-
-                    if (i < size - 1) {
-                        i++;
-                    }
-                }
-            }
-        }
-        return arrayForLists;
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] array) {
-        if (array == null) {
-            throw new IllegalArgumentException("This array is null!");
-        }
-        if (array.length < size) {
-            //noinspection unchecked
-            array = (T1[]) Arrays.copyOf(array, size, array.getClass());
-        }
-        int i = 0;
-
-        for (ArrayList list : this.lists) {
-            if (list != null) {
-                for (Object item : list) {
-                    //noinspection unchecked
-                    array[i] = (T1) item;
-                    i++;
-                }
-            }
-        }
-        if (array.length > size) {
-            array[size] = null;
-        }
-        return array;
     }
 }

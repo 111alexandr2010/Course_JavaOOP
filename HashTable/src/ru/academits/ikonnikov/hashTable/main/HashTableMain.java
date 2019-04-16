@@ -4,9 +4,9 @@ import ru.academits.ikonnikov.hashTable.classes.MyHashTable;
 
 import java.util.*;
 
-public class MainHashTable {
+public class HashTableMain {
     public static void main(String[] args) {
-        Collection<String> myStringsCollection1 = new ArrayList<>(Arrays.asList("a", "c", "n", "p", "t", "55", "60", "56", "s", null, "q", "j", "30", "39"));
+        Collection<String> myStringsCollection1 = new ArrayList<>(Arrays.asList("a", "c", "n", "p", "t", "55", "60", "56", "s", "q", "j", "30", "39", null));
         MyHashTable<String> myHashTableStrings = new MyHashTable<>(100);
         myHashTableStrings.addAll(myStringsCollection1);
         System.out.println("The myHashTableStrings is :" + myHashTableStrings.toString());
@@ -17,10 +17,10 @@ public class MainHashTable {
             System.out.println("The myHashTableStrings is not empty!");
         }
         myHashTableStrings.add("x");
-        Collection<String> myStringsCollection2 = new ArrayList<>(Arrays.asList("b", "d", "42", "f", "57", "99", "21", "&", null));
+        Collection<String> myStringsCollection2 = new ArrayList<>(Arrays.asList("b", "d", null, "42", "f", "57", "99", "21", "&"));
         System.out.println("The myStringsCollection is :" + myStringsCollection2.toString());
 
-        if ( myHashTableStrings.addAll(myStringsCollection2)) {
+        if (myHashTableStrings.addAll(myStringsCollection2)) {
             System.out.println("The myHashTableStrings after adding of myStringsCollection is :" + myHashTableStrings.toString());
         }
 
@@ -35,10 +35,10 @@ public class MainHashTable {
         }
         String stringItem2 = "e";
 
-        if (myHashTableStrings.contains(stringItem2 )) {
-            System.out.printf("The myHashTableStrings has item '%s'.%n", stringItem2 );
+        if (myHashTableStrings.contains(stringItem2)) {
+            System.out.printf("The myHashTableStrings has item '%s'.%n", stringItem2);
         } else {
-            System.out.printf("The myHashTableStrings has not item '%s'.%n", stringItem2 );
+            System.out.printf("The myHashTableStrings has not item '%s'.%n", stringItem2);
         }
 
         if (myHashTableStrings.remove(stringItem1)) {
@@ -50,16 +50,15 @@ public class MainHashTable {
         System.out.println(myHashTableStrings.toString());
         System.out.println();
 
-
         Iterator iteratorString = myHashTableStrings.iterator();
         System.out.print("The items of myHashTableStrings are : ");
 
         while (iteratorString.hasNext()) {
-            System.out.print(iteratorString.next() + "   ");
+            System.out.print(iteratorString.next() + "  ");
         }
         System.out.println();
 
-       Collection<String> myCollectionStrings1 = new ArrayList<>(Arrays.asList("b", "c", "n", "p", "t", "55", "99", "&", null));
+        Collection<String> myCollectionStrings1 = new ArrayList<>(Arrays.asList("b", "c", "n", "p", "t", "55", "99", "&", null));
 
         if (myHashTableStrings.containsAll(myCollectionStrings1)) {
             System.out.printf("The myHashTableStrings has collection %s.%n", myCollectionStrings1.toString());
@@ -81,6 +80,7 @@ public class MainHashTable {
             System.out.printf("The result of method 'myHashTableStrings.retainAll(%s)'  is :%n", myCollectionStrings2.toString());
             System.out.println(myHashTableStrings.toString());
         }
+        System.out.println("The size of myHashTableStrings after retaining of myCollectionStrings2 is : " + myHashTableStrings.size());
         System.out.println();
 
         List<String> myListStringsSmall = new ArrayList<>(Arrays.asList("v1", "d1", "h1", null, "11", "21", "u1", null, "c1", "a1"));
@@ -111,7 +111,7 @@ public class MainHashTable {
 
         myHashTableIntegers.addAll(myArrayListIntegers);
         System.out.println("The myHashTableIntegers after adding of myArrayListIntegers is : ");
-        System.out.println( myHashTableIntegers.toString());
+        System.out.println(myHashTableIntegers.toString());
 
         if (myHashTableIntegers.remove(402)) {
             System.out.println("The item '402' was removed from myHashTableIntegers.");
@@ -119,7 +119,7 @@ public class MainHashTable {
             System.out.println("The item '402'  wasn't removed from myHashTableIntegers.");
         }
         System.out.println("The myHashTableIntegers after removing of item '402' is : ");
-        System.out.println( myHashTableIntegers.toString());
+        System.out.println(myHashTableIntegers.toString());
 
         Collection<Integer> myCollectionIntegers = new ArrayList<>(Arrays.asList(1, 78, 79, 80, 85, 86, 87, 88, 89, 90, 102, 168, 231, null));
 
@@ -130,9 +130,19 @@ public class MainHashTable {
         }
         System.out.printf("The myHashTableIntegers after removing of myCollectionIntegers %s is : %n", myCollectionIntegers.toString());
         System.out.println(myHashTableIntegers.toString());
+        System.out.println("The size of myHashTableIntegers after removing of myCollectionIntegers is : " + myHashTableIntegers.size());
+
+        Iterator iteratorInteger = myHashTableIntegers.iterator();
+        System.out.print("The items of myHashTableIntegers are : ");
+
+        while (iteratorInteger.hasNext()) {
+            System.out.print(iteratorInteger.next() + "  ");
+        }
+        System.out.println();
 
         myHashTableIntegers.clear();
         System.out.printf("The myHashTableIntegers after clearing is : %s%n", myHashTableIntegers.toString());
+
         if (myHashTableIntegers.isEmpty()) {
             System.out.println("The myHashTableIntegers is empty!");
         } else {
