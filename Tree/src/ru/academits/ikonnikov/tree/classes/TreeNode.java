@@ -1,7 +1,5 @@
 package ru.academits.ikonnikov.tree.classes;
 
-import java.util.Comparator;
-
 public class TreeNode<T> {
     private TreeNode<T> left;
     private TreeNode<T> right;
@@ -9,12 +7,6 @@ public class TreeNode<T> {
 
     public TreeNode(T data) {
         this.data = data;
-    }
-
-    public TreeNode(T data, TreeNode<T> left, TreeNode<T> right) {
-        this.data = data;
-        this.left = left;
-        this.right = right;
     }
 
     public T getData() {
@@ -25,13 +17,18 @@ public class TreeNode<T> {
         return this.getLeft() == null && this.getRight() == null;
     }
 
-    public boolean hasBothChildren() {
-        return this.getLeft() != null && this.getRight() != null;
+    public boolean hasNotBothChildren() {
+        return this.getLeft() == null || this.getRight() == null;
     }
 
     public TreeNode<T>[] getChildren() {
         //noinspection unchecked
         return (TreeNode<T>[]) new TreeNode[]{left, right};
+    }
+
+    public TreeNode<T>[] getChildrenBackwards() {
+        //noinspection unchecked
+        return (TreeNode<T>[]) new TreeNode[]{right, left};
     }
 
     public void setData(T data) {
@@ -54,35 +51,18 @@ public class TreeNode<T> {
         this.right = right;
     }
 
-     Runnable run = new Runnable() {
-        int startIndex = 1;
-        @Override
-        public void run() {
-            System.out.printf("%2d) %s%n", startIndex, this.toString());
-            startIndex++;
-        }
-    };
-
     @Override
     public String toString() {
         if (left == null) {
             if (right == null) {
-                return String.format("[DATA:%3s, LEFT:   , RIGHT:    ]", data);
+                return String.format("[DATA:%3s, L:   , R:    ]", data);
             } else {
-                return String.format("[DATA:%3s, LEFT:   , RIGHT:%3s ]", data, right.getData());
+                return String.format("[DATA:%3s, L:   , R:%3s ]", data, right.getData());
             }
         }
         if (right == null) {
-            return String.format("[DATA:%3s, LEFT:%3s, RIGHT:    ]", data, left.getData());
+            return String.format("[DATA:%3s, L:%3s, R:    ]", data, left.getData());
         }
-        return String.format("[DATA:%3s, LEFT:%3s, RIGHT:%3s ]", data, left.getData(), right.getData());
+        return String.format("[DATA:%3s, L:%3s, R:%3s ]", data, left.getData(), right.getData());
     }
-
-    private Comparator<T> compareData = new Comparator<>(){
-        @SuppressWarnings("InfiniteRecursion")
-        @Override
-        public int compare(T data1, T data2) {
-            return compare(data1, data2);
-        }
-    };
 }
