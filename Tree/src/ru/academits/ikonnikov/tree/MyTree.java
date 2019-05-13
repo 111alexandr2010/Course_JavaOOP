@@ -13,7 +13,11 @@ public class MyTree<T> {
     public MyTree(T rootData) {
         size = 1;
         root = new TreeNode<>(rootData);
-        comparator = (item1, item2) -> {
+        comparator = createComparator();
+    }
+
+    private Comparator<T> createComparator() {
+        return (item1, item2) -> {
             if (item1 == null || item2 == null) {
                 if (item1 == null && item2 == null) {
                     return 0;
@@ -22,7 +26,7 @@ public class MyTree<T> {
                 }
                 return 1;
             }
-            //noinspection deprecation,unchecked
+            //noinspection unchecked
             return ((Comparable<T>) item1).compareTo(item2);
         };
     }
@@ -42,18 +46,7 @@ public class MyTree<T> {
     public MyTree() {
         root = null;
         size = 0;
-        comparator = (item1, item2) -> {
-            if (item1 == null || item2 == null) {
-                if (item1 == null && item2 == null) {
-                    return 0;
-                } else if (item1 == null) {
-                    return -1;
-                }
-                return 1;
-            }
-            //noinspection deprecation,unchecked
-            return ((Comparable<T>) item1).compareTo(item2);
-        };
+        comparator = createComparator();
     }
 
     public int getSize() {
@@ -69,6 +62,7 @@ public class MyTree<T> {
         if (size == 0) {
             throw new IllegalArgumentException("This tree is empty!");
         }
+
         TreeNode<T> currentNode = root;
         TreeNode<T> parentNode = null;
 
@@ -78,14 +72,10 @@ public class MyTree<T> {
             if (resultCompareValueAndCurrentNodeData == 0) {
                 if (parentNode == null) {
                     //noinspection unchecked
-                    return (TreeNode<T>[]) new TreeNode[]{null, root, null};
-                }
-                if (comparator.compare(currentNode.getData(), parentNode.getData()) < 0) {
-                    //noinspection unchecked
-                    return (TreeNode<T>[]) new TreeNode[]{parentNode, currentNode, null};
+                    return (TreeNode<T>[]) new TreeNode[]{null, root};
                 }
                 //noinspection unchecked
-                return (TreeNode<T>[]) new TreeNode[]{parentNode, null, currentNode};
+                return (TreeNode<T>[]) new TreeNode[]{parentNode, currentNode};
             }
 
             if (resultCompareValueAndCurrentNodeData < 0) {
@@ -139,7 +129,7 @@ public class MyTree<T> {
     private TreeNode<T>[] getMinLeftNodeAndParent(TreeNode<T> node) {
         TreeNode<T> minLeftNode = node.getRight();
         TreeNode<T> minLeftParentNode = node;
-        TreeNode<T> currentMinLeftNode = null;
+        TreeNode<T> currentMinLeftNode;
 
         while (minLeftNode.getLeft() != null) {
             currentMinLeftNode = minLeftNode.getLeft();
@@ -147,33 +137,30 @@ public class MyTree<T> {
             minLeftNode = currentMinLeftNode;
         }
         //noinspection unchecked
-        return (TreeNode<T>[]) new TreeNode[]{minLeftParentNode, minLeftNode, currentMinLeftNode};
+        return (TreeNode<T>[]) new TreeNode[]{minLeftParentNode, minLeftNode};
     }
 
     public boolean removeNodeByValue(T value) {
         if (size == 0) {
             return false;
         }
+
         TreeNode<T>[] arrayRemoving = getNodeAndParentByValue(value);
 
         if (arrayRemoving == null) {
             return false;
         }
-        TreeNode<T> removedNode;
+
+        TreeNode<T> removedNode = arrayRemoving[1];
         TreeNode<T> parentRemovedNode = arrayRemoving[0];
 
-        if (arrayRemoving[2] == null) {
-            removedNode = arrayRemoving[1];
-        } else {
-            removedNode = arrayRemoving[2];
-        }
         //case, when RemovedNode has not children:
         if (removedNode.hasNotChildren()) {
             if (parentRemovedNode == null) {
                 root = null;
                 size = 0;
                 return true;
-            } else if (arrayRemoving[2] == null) {
+            } else if (parentRemovedNode.getLeft() == removedNode) {
                 parentRemovedNode.setLeft(null);
             } else {
                 parentRemovedNode.setRight(null);
@@ -181,9 +168,10 @@ public class MyTree<T> {
             size--;
             return true;
         }
+
         //case, when RemovedNode has only one child:
         if (removedNode.hasNotBothChildren()) {
-            if (arrayRemoving[1] == null && parentRemovedNode != null) {
+            if (parentRemovedNode != null && parentRemovedNode.getRight() == removedNode) {
                 if (removedNode.getLeft() != null) {
                     parentRemovedNode.setRight(removedNode.getLeft());
                 } else {
@@ -203,48 +191,52 @@ public class MyTree<T> {
             size--;
             return true;
         }
+
         //case, when RemovedNode has both children:
         TreeNode<T>[] arrayMinLeft = getMinLeftNodeAndParent(removedNode);
-        arrayMinLeft[1].setLeft(removedNode.getLeft());
-        arrayMinLeft[0].setLeft(arrayMinLeft[1].getRight());
+        TreeNode<T> minLeftParentNode = arrayMinLeft[0];
+        TreeNode<T> minLeftNode = arrayMinLeft[1];
+        minLeftNode.setLeft(removedNode.getLeft());
+        minLeftParentNode.setLeft(minLeftNode.getRight());
 
         if (parentRemovedNode != null) {
-            if (arrayRemoving[1] == null) {
-                parentRemovedNode.setRight(arrayMinLeft[1]);
+            if (parentRemovedNode.getRight() == removedNode) {
+                parentRemovedNode.setRight(minLeftNode);
             } else {
-                parentRemovedNode.setLeft(arrayMinLeft[1]);
+                parentRemovedNode.setLeft(minLeftNode);
             }
-            if (arrayMinLeft[2] != null) {
-                arrayMinLeft[1].setRight(removedNode.getRight());
+            if (minLeftParentNode != removedNode) {
+                minLeftNode.setRight(removedNode.getRight());
             }
         } else {
-            root = arrayMinLeft[1];
+            root = minLeftNode;
             root.setLeft(removedNode.getLeft());
         }
-        if (arrayMinLeft[2] != null) {
-            root.setRight(removedNode.getRight());
+
+        if (minLeftParentNode != removedNode) {
+            minLeftNode.setRight(removedNode.getRight());
         }
         size--;
         return true;
     }
 
-
     public void goAroundInWidth(Consumer<T> method) {
         if (root == null) {
             return;
         }
+
         Queue<TreeNode<T>> queue = new LinkedList<>();
         queue.add(root);
 
         while (queue.size() > 0) {
-            TreeNode<T> currentNode = queue.remove();
-            method.accept(currentNode.getData());
-            TreeNode<T>[] arrayChildren = currentNode.getChildren();
+            TreeNode<T> currentItem = queue.remove();
+            method.accept(currentItem.getData());
 
-            for (TreeNode<T> child : arrayChildren) {
-                if (child != null) {
-                    queue.add(child);
-                }
+            if (currentItem.getLeft() != null) {
+                queue.add(currentItem.getLeft());
+            }
+            if (currentItem.getRight() != null) {
+                queue.add(currentItem.getRight());
             }
         }
     }
@@ -260,6 +252,7 @@ public class MyTree<T> {
         if (currentNode == null) {
             return;
         }
+
         method.accept(currentNode.getData());
 
         if (currentNode.getLeft() != null) {
@@ -274,18 +267,19 @@ public class MyTree<T> {
         if (root == null) {
             return;
         }
+
         LinkedList<TreeNode<T>> stack = new LinkedList<>();
         stack.add(root);
 
         while (stack.size() > 0) {
             TreeNode<T> currentItem = stack.removeLast();
             method.accept(currentItem.getData());
-            TreeNode<T>[] arrayChildren = currentItem.getChildrenBackwards();
 
-            for (TreeNode<T> child : arrayChildren) {
-                if (child != null) {
-                    stack.add(child);
-                }
+            if (currentItem.getRight() != null) {
+                stack.add(currentItem.getRight());
+            }
+            if (currentItem.getLeft() != null) {
+                stack.add(currentItem.getLeft());
             }
         }
     }

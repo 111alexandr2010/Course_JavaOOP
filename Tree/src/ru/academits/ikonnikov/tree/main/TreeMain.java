@@ -66,7 +66,8 @@ public class TreeMain {
             return Integer.compare(item1, item2);
         };
 
-        MyTree<Integer> integerMyTree = new MyTree<>(10, comparatorInteger);
+        MyTree<Integer> integerMyTree = new MyTree<>(comparatorInteger);
+        integerMyTree.insertNode(10);
         integerMyTree.insertNode(6);
         integerMyTree.insertNode(0);
         integerMyTree.insertNode(1);
@@ -97,7 +98,7 @@ public class TreeMain {
         integerMyTree.goAroundInDepth(nodeData -> System.out.printf("[ %s ] %n", nodeData));
         System.out.println();
 
-        Integer y = null;
+        Integer y = 8;
 
         if (integerMyTree.isInTree(y)) {
             integerMyTree.removeNodeByValue(y);
@@ -108,7 +109,7 @@ public class TreeMain {
         }
         System.out.println();
 
-        Integer z = 10;
+        Integer z = 12;
 
         if (integerMyTree.isInTree(z)) {
             integerMyTree.removeNodeByValue(z);
