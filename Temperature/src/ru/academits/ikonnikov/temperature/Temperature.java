@@ -1,21 +1,16 @@
 package ru.academits.ikonnikov.temperature;
 
+import ru.academits.ikonnikov.temperature.classes.*;
 import ru.academits.ikonnikov.temperature.gui.View;
-
-import javax.swing.*;
 
 public class Temperature {
     public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            View view = new View();
-            view.run();
-            view.setVisible(true);
-        });
+        Scales[] scales = new Scales[3];
+        scales[0] = new ScaleCelsius();
+        scales[1] = new ScaleFahrenheit();
+        scales[2] = new ScaleKelvin();
+        View view = new View(scales);
+        view.run();
+        view.setVisible(true);
     }
 }
